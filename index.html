@@ -28,13 +28,6 @@
     .btn-search { background: #d62b27; color: white; border: none; border-radius: 10px; padding: 13px 24px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
     .btn-search:hover  { background: #b01f1c; }
     .btn-search:active { transform: scale(0.97); }
-    .data-status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #aaa; margin-top: 10px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
-    .dot.green { background: #4caf50; }
-    .dot.red   { background: #f44336; }
-    .dot.amber { background: #f5c800; }
-    .dot.spin  { border: 2px solid #ddd; border-top-color: #d62b27; background: transparent; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
     #result { margin-top: 26px; display: none; }
     .result-found { border: 2px solid #d9ead3; border-radius: 14px; background: #f9fffe; overflow: hidden; }
     .result-header { background: linear-gradient(135deg, #2a6b1e, #3a8a2a); padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
@@ -114,11 +107,6 @@
       <button class="btn-search" onclick="lookupVendor()">Search</button>
     </div>
 
-    <div class="data-status" id="dataStatus">
-      <div class="dot spin" id="statusDot"></div>
-      <span id="statusText">Loading vendor data…</span>
-    </div>
-
     <div id="result"></div>
   </div>
 </main>
@@ -167,23 +155,15 @@
     return result;
   }
 
-  function setStatus(cls, text) {
-    document.getElementById('statusDot').className   = 'dot ' + cls;
-    document.getElementById('statusText').textContent = text;
-  }
-
   async function loadData() {
     try {
       const res = await fetch(SHEET_CSV_URL);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const text = await res.text();
       vendorData = parseCSV(text);
-      const n = Object.keys(vendorData).length;
-      if (n === 0) throw new Error('empty');
-      setStatus('green', n + ' vendor record' + (n !== 1 ? 's' : '') + ' loaded');
+      if (Object.keys(vendorData).length === 0) throw new Error('empty');
     } catch (e) {
       console.warn('Sheet load failed:', e);
-      setStatus('red', 'Could not load data — please try again shortly');
     }
   }
 
